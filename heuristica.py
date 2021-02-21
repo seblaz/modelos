@@ -1,22 +1,17 @@
-COLORS = [x for x in range(1000)]
+DIAS = [x for x in range(1, 1001)]
 
 
 def split(x, n):
-    # If we cannot split the
-    # number into exactly 'N' parts
+    '''
+    Genera una lista de `n` enteros cuya suma da exactamente `x`.
+    La diferencia entre los `n` enteros no será mayor a uno.
+    '''
     if x < n:
         return False
 
-        # If x % n == 0 then the minimum
-    # difference is 0 and all
-    # numbers are x / n
     elif x % n == 0:
         return [x // n for _ in range(n)]
 
-    # upto n-(x % n) the values
-    # will be x / n
-    # after that the values
-    # will be x / n + 1
     zp = n - (x % n)
     pp = x // n
     result = []
@@ -31,53 +26,41 @@ def split(x, n):
 
 
 class HeuristicaGreedy:
-    """
-    1. colores = []
-    2. Mientras(no se encuentre solución):
-    3.   reiniciar_grafo()
-    4.   colores.agregar(un_color)
-    5.   vértices_por_color = split(cantidad(grafo.vertices), cantidad(colores))
-
-    6.   for index, cantidad in vértices_por_color:
-    7.     color = colores[index]
-    8.     colorear "cantidad" de vértices con "color"
-    """
 
     def calculate(self, graph_i):
-        # for i in range(5, len(COLORS)):
-        for i in range(1, len(COLORS)):
+        for i in range(1, len(DIAS)):
             graph = graph_i.copy()
             if self._buscar_solucion(graph, i + 1):
                 return graph
         return False
 
-    def _buscar_solucion(self, graph, cantidad_de_colores):
-        colores = COLORS[:cantidad_de_colores]
-        vertices_por_color = split(len(graph.nodes), len(colores))
+    def _buscar_solucion(self, graph, cantidad_de_dias):
+        dias = DIAS[:cantidad_de_dias]
+        grupos_por_dia = split(len(graph.nodes), len(dias))
 
-        for indice, cantidad in enumerate(vertices_por_color):
-            color = colores[indice]
+        for indice, cantidad in enumerate(grupos_por_dia):
+            dia = dias[indice]
 
             for _ in range(cantidad):
-                pude_colorear = False
+                pude_asignar_dia = False
                 for nodo in graph.nodes(data=True):
-                    if self._puedo_colorear(graph, nodo, color):
-                        graph.nodes[nodo[0]]['color'] = color
-                        pude_colorear = True
+                    if self._dia_asignable(graph, nodo, dia):
+                        graph.nodes[nodo[0]]['dia'] = dia
+                        pude_asignar_dia = True
                         break
 
-                if not pude_colorear:
-                    print('No encontré solución con {} colores'.format(len(colores)))
+                if not pude_asignar_dia:
+                    print('No encontré solución con {} dias'.format(len(dias)))
                     return False
 
-        print('Encontré solución con {} colores'.format(len(colores)))
+        print('Encontré solución con {} dias'.format(len(dias)))
         return True
 
-    def _puedo_colorear(self, graph, nodo, color):
-        return ('color' not in graph.nodes[nodo[0]]) and (not self._vecino_de_nodo_tiene_color(graph, nodo, color))
+    def _dia_asignable(self, graph, nodo, dia):
+        return ('dia' not in graph.nodes[nodo[0]]) and (not self._vecino_de_nodo_tiene_mismo_dia(graph, nodo, dia))
 
-    def _vecino_de_nodo_tiene_color(self, graph, nodo, color):
+    def _vecino_de_nodo_tiene_mismo_dia(self, graph, nodo, dia):
         for vecino in graph.neighbors(nodo[0]):
-            if ('color' in graph.nodes[vecino]) and (graph.nodes[vecino]['color']) == color:
+            if ('dia' in graph.nodes[vecino]) and (graph.nodes[vecino]['dia']) == dia:
                 return True
         return False

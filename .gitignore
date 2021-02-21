@@ -3,3 +3,5 @@ tp-modelos
 .idea
 __pycache__
 datasets.zip
+*.png
+
