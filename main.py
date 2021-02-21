@@ -18,8 +18,13 @@ def create_graph(nodes, edges):
 if __name__ == '__main__':
     parser = Parser(FILE_PATH)
     graph = create_graph(parser.nodes, parser.edges)
-    nx.draw_networkx(graph)
     graph = HeuristicaGreedy().calculate(graph)
+
     if graph:
-        print(graph.nodes(data=True))
+        node_map = []
+        for node in graph.nodes(data=True):
+            node_map.append(node[1]['color'])
+
+        nx.draw(graph, node_color=node_map)
+        # print(graph.nodes(data=True))
         plt.show()

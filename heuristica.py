@@ -1,16 +1,4 @@
-COLORS = [
-    'yellow',
-    'red',
-    'green',
-    'blue',
-    'orange',
-    'purple',
-    'white',
-    'pink',
-    'a',
-    'b',
-    'c'
-]
+COLORS = [x for x in range(1000)]
 
 
 def split(x, n):
@@ -73,11 +61,7 @@ class HeuristicaGreedy:
             for _ in range(cantidad):
                 pude_colorear = False
                 for nodo in graph.nodes(data=True):
-                    ## TODO: verificar que el color no este en los vecinos
-                    if self._vecino_de_nodo_tiene_color(graph, nodo, color):
-                        continue
-
-                    if 'color' not in graph.nodes[nodo[0]]:
+                    if self._puedo_colorear(graph, nodo, color):
                         graph.nodes[nodo[0]]['color'] = color
                         pude_colorear = True
                         break
@@ -85,9 +69,12 @@ class HeuristicaGreedy:
                 if not pude_colorear:
                     print('No encontré solución con {} colores'.format(len(colores)))
                     return False
+
         print('Encontré solución con {} colores'.format(len(colores)))
         return True
 
+    def _puedo_colorear(self, graph, nodo, color):
+        return ('color' not in graph.nodes[nodo[0]]) and (not self._vecino_de_nodo_tiene_color(graph, nodo, color))
 
     def _vecino_de_nodo_tiene_color(self, graph, nodo, color):
         for vecino in graph.neighbors(nodo[0]):
