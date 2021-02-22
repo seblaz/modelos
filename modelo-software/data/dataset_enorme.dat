@@ -1,6 +1,5 @@
-param N_VECINOS := 1000;
-param MAX_COLORES := 100;
-
+param N_GRUPOS_FAMILIARES := 1000;
+param N_DIAS := 100;
 param TOLERANCIA := 50;
 
 param E:

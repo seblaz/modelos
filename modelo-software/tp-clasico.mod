@@ -1,43 +1,43 @@
 
 /* Parametros */
 
-param N_VECINOS;
-param MAX_COLORES;
+param N_GRUPOS_FAMILIARES;
+param N_DIAS;
 param TOLERANCIA;
 
-set VECINOS := {0..(N_VECINOS-1)};
-set COLORES := {1..(MAX_COLORES)};
+set GRUPOS_FAMILIARES := {0..(N_GRUPOS_FAMILIARES-1)};
+set DIAS := {1..(N_DIAS)};
 
-param E{i in VECINOS, j in VECINOS};
+param E{i in GRUPOS_FAMILIARES, j in GRUPOS_FAMILIARES};
 
-var X{i in VECINOS, j in COLORES}, binary;
-var W{j in COLORES}, binary;
+var X{i in GRUPOS_FAMILIARES, j in DIAS}, binary;
+var W{j in DIAS}, binary;
 
 param M := 1000;
 
 /* Restricciones */
 
-# Hay un unico color por vertice
-s.t. UNICO_COLOR_POR_VERTICE{i in VECINOS}: sum{j in COLORES} X[i,j] = 1;
+# Hay un unico dia por grupo familiar
+s.t. UNICO_DIA_POR_VECINO{i in GRUPOS_FAMILIARES}: sum{j in DIAS} X[i,j] = 1;
 
 # Restriccion de adyacencia entre vecinos 
-s.t. ADYACENTES_DISTINTO_COLOR{i in VECINOS, k in VECINOS, j in COLORES: E[i,k] = 1}: X[i,j] + X[k,j] <= W[j];
+s.t. ADYACENTES_DISTINTO_DIA{i in GRUPOS_FAMILIARES, k in GRUPOS_FAMILIARES, j in DIAS: E[i,k] = 1}: X[i,j] + X[k,j] <= W[j];
 
 # Eliminacion de simetria
-s.t. ELIMINACION_SIMETRIA{j in COLORES: j <> MAX_COLORES}: sum{i in VECINOS} X[i,j] >= sum{i in VECINOS} X[i,j+1];
+s.t. ELIMINACION_SIMETRIA{j in DIAS: j <> N_DIAS}: sum{i in GRUPOS_FAMILIARES} X[i,j] >= sum{i in GRUPOS_FAMILIARES} X[i,j+1];
 
 # Cantidad de grupos familiares que pueden salir cada dia deben ser similares
-s.t. DIFERENCIA_SIMILAR{j in COLORES, l in COLORES: j <> l}: (sum{i in VECINOS} X[i,j]) - (sum{i in VECINOS} X[i,l]) <= TOLERANCIA + M * (1 - W[j]) + M * (1 - W[l]);
+s.t. DIFERENCIA_SIMILAR{j in DIAS, l in DIAS: j <> l}: (sum{i in GRUPOS_FAMILIARES} X[i,j]) - (sum{i in GRUPOS_FAMILIARES} X[i,l]) <= TOLERANCIA + M * (1 - W[j]) + M * (1 - W[l]);
 
 /* Funcional */
-minimize z: sum{i in COLORES} W[i];
+minimize z: sum{i in DIAS} W[i];
 
 solve;
 
-table tbl{i in VECINOS, j in COLORES: X[i,j] = 1} OUT "CSV" "colores.csv":
+table tbl{i in GRUPOS_FAMILIARES, j in DIAS: X[i,j] = 1} OUT "CSV" "dias.csv":
 i,j;
 
-#table tbl{i in VECINOS, k in VECINOS: E[i,k] = 1} OUT "CSV" "vecinos.csv":
+#table tbl{i in GRUPOS_FAMILIARES, k in GRUPOS_FAMILIARES: E[i,k] = 1} OUT "CSV" "vecinos.csv":
 #i,k;
 
 
